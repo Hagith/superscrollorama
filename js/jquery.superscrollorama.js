@@ -30,17 +30,22 @@
         var animObjects = [],
             pinnedObjects = [],
             scrollContainerOffset = {x: 0, y: 0},
+            isSuspended = false,
             doUpdateOnNextTick = false,
             targetOffset,
             i;
 
         // PRIVATE FUNCTIONS
 
+        function onScroll() {
+            if (!isSuspended) {
+                doUpdateOnNextTick = true;
+            }
+        }
+
         function init() {
             // set event handlers
-            $window.scroll(function() {
-                doUpdateOnNextTick = true;
-            });
+            $window.scroll(onScroll);
             TweenLite.ticker.addEventListener("tick", tickHandler);
         }
 
@@ -443,6 +448,10 @@
                 }
             }
             return superscrollorama;
+        };
+
+        superscrollorama.suspend = function (flag) {
+            isSuspended = flag;
         };
 
         superscrollorama.setScrollContainerOffset = function (x, y) {
